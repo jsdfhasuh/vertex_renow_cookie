@@ -8,3 +8,5 @@
 
 #### easychen / CookieCloud
 #### vertex-app / vertex
+
+使用方法:填好脚本前面参数，运行即可
