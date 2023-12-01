@@ -1,10 +1,13 @@
 # vertex_renow_cookie
+=======
+## 需要的依赖 ： jq grep sed awk
 
-##需要的依赖 ： jq grep sed awk
+## 基本功能：通过cookie_cloud 将浏览器的cookie同步更新到vertex里面
 
-##基本功能：通过cookie_cloud 将浏览器的cookie同步更新到vertex里面
+## 感谢以下作者：
 
-##感谢以下作者：
+#### easychen / CookieCloud
+#### vertex-app / vertex
 
-####easychen / CookieCloud
-####vertex-app / vertex
+使用方法:填好脚本前面参数，运行即可
+>>>>>>> fda818332b2c2dbeb3a2ac6afa207ad8dd877c77
