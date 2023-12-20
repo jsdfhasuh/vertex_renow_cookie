@@ -241,6 +241,12 @@ if __name__=='__main__':
         logger.info('开始备份Vertex到{file_path}')
         back_up_vertex(file_path=file_path)  # 备份vertex,传入路径就备份
     save_data_json = os.path.join(BASE_DIR,'save_data.json')
+    if not os.path.exists(path=save_data_json):
+        logger.info('创建sava_data_json')
+        empty_data = {}
+        with open(save_data_json, 'w') as json_file:
+            json.dump(empty_data, json_file)
+    
     save_data=read_dict_from_json(filename=save_data_json)
     get_cookie_cloud_data()
     douban_cookie=get_cookie('.douban.com')
@@ -259,11 +265,13 @@ if __name__=='__main__':
         save_data['ck'] = ck_value
         logger.info(f'The value of ck is: {ck_value}')
         write_dict_to_json(data=save_data,filename=save_data_json)
-    else:
+    elif 'ck' in save_data:
         name = 'ck'
         value = save_data[name]
         all_douban_cookie += f';{name}={value};'
         logger.info(f'No match found for ck,douban:{all_douban_cookie}')
+    else:
+        logger.info('save_data 没有ck值，请登录豆瓣同步')
 
     logger.info(f'all_douban_cookie:{all_douban_cookie}')
     renow_vertex_douban(all_douban_cookie)
