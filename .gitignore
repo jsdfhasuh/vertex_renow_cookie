@@ -1,0 +1,10 @@
+*.log
+*.json
+*.gz
+*.xml
+*.iml
+.idea/.gitignore
+.idea/.name
+__pycache__/ql_api.cpython-310.pyc
+__pycache__/ql_api.cpython-311.pyc
+__pycache__/logger.cpython-310.pyc

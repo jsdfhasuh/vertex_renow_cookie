@@ -1,0 +1,8 @@
+version: '3'
+services:
+  vt_ck_sync:
+    image: jsdfhasuh/vt_ck_sync:v1.0
+    container_name: vt_ck_sync
+    network_mode: host  # 使用主机网络模式
+    volumes:
+      - ./user_config.ini:/app/user_config.ini  # 将本地的 user_config.ini 映射到容器内的 /app 目录
