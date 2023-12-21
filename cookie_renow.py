@@ -58,7 +58,7 @@ def get_cookie(domain):
     try:
         domain_data=cookie_cloud_data['cookie_data'][domain]
     except:
-        print('加前缀www和加.')
+        logger.info('加前缀www和加.')
         domain = domain.replace("www.", "")
         if domain[0].lower() != ".":
             domain = '.' + domain
@@ -66,12 +66,12 @@ def get_cookie(domain):
     try:
         domain_data = cookie_cloud_data['cookie_data'][domain]
         cookies = ';'.join([f"{obj['name']}={obj['value']}" for obj in domain_data])
-        #print(cookies)
+        #logger.info(cookies)
         return cookies
     except Exception as e:
-        print(f'发生{e}错误，找不到站点{domain}的cookies')
+        logger.info(f'发生{e}错误，找不到站点{domain}的cookies')
         return None
-    #print(cookie_cloud_data)
+    #logger.info(cookie_cloud_data)
 
 
 
@@ -80,10 +80,10 @@ def get_vertex_cookie():
     data = {'username': username, 'password': password}
     session = requests.Session()
     response = session.post(url, data=data)
-    print(response.text)
+    logger.info(response.text)
     # 获取cookie
     cookies = session.cookies.get_dict()
-    print(cookies)
+    logger.info(cookies)
     cookies='; '.join([f'{key}={value}' for key, value in cookies.items()])
 
     return cookies
@@ -98,11 +98,13 @@ def renow_vertex_douban(douban_cookie):
     response = requests.get(url, headers=headers)
     data=response.json()['data']
     for element in data:
-        print(f"{element['alias']}更新豆瓣cookies")
+        logger.info(f"{element['alias']}更新豆瓣cookies")
         element['cookie']=douban_cookie
         json_data = json.dumps(element)
         response = requests.post(url_modify, data=json_data,headers=headers)
-        print(response.text)
+        logger.info(response.text)
+        if 'success' in response.text:
+            logger.info(f"{element['alias']}更新豆瓣cookies成功")
 
 
 def renow_vertex_site():
@@ -123,7 +125,8 @@ def renow_vertex_site():
             site['cookie']=get_cookie(domain)
         json_data = json.dumps(site)
         response = requests.post(url_modify, data=json_data,headers=headers)
-        print(response.text)
+        if 'success' in response.text:
+            logger.info(f'{domain}更新cookie成功')
 
 def renow_flexget(config_path,site_folder):
     file=config_path
@@ -137,10 +140,10 @@ def renow_flexget(config_path,site_folder):
             match = re.search(r"URL:\s*Final\s*=\s*'([^']+)'", raw_content)
             if match:
                 url = match.group(1)
-                print(url)
+                logger.info(url)
         parsed_url = urllib.parse.urlparse(url)
         domain = parsed_url.netloc
-        print(f'站点名：{domain}')
+        logger.info(f'站点名：{domain}')
         cookie = get_cookie(domain) #
         if cookie:
             if has_subkey(sites, site):
@@ -166,9 +169,9 @@ def back_up_vertex(file_path):
         # 保存文件
         with open(file_name, 'wb') as file:
             file.write(response.content)
-        print('文件下载成功:', file_name)
+        logger.info('文件下载成功:', file_name)
     else:
-        print('文件下载失败，HTTP状态码:', response.status_code)
+        logger.info('文件下载失败，HTTP状态码:', response.status_code)
 
 def split_cookie(cookie):
     # 去掉字符串中的空格
@@ -200,7 +203,7 @@ def cookie_add(main,second):
 def write_dict_to_json(data, filename):
     with open(filename, "w") as json_file:
         json.dump(data, json_file, ensure_ascii=False,indent=4)
-    print(f"字典已写入 JSON 文件: {filename}")
+    logger.info(f"字典已写入 JSON 文件: {filename}")
 
 def read_dict_from_json(filename):
     with open(filename, "r") as json_file:
@@ -277,6 +280,6 @@ if __name__=='__main__':
     renow_vertex_douban(all_douban_cookie)
     renow_vertex_site()
 
-    if config.has_section(section='Flexget'):      
+    if config.has_section(section='Flexget') and os.path.exists(path=config_path):      
         renow_flexget(config_path=config_path,site_folder=site_folder)
         subprocess.run(["docker", "restart", container_name])
